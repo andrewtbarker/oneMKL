@@ -48,6 +48,9 @@ private:
 class computation_error : public oneapi::math::computation_error,
                           public oneapi::math::lapack::exception {
 public:
+    computation_error(const std::string& message, std::int64_t code)
+            : oneapi::math::computation_error(message),
+              oneapi::math::lapack::exception(this, code) {}
     computation_error(const std::string& function, const std::string& info, std::int64_t code)
             : oneapi::math::computation_error("LAPACK", function, info),
               oneapi::math::lapack::exception(this, code) {}
@@ -78,12 +81,55 @@ private:
 class invalid_argument : public oneapi::math::invalid_argument,
                          public oneapi::math::lapack::exception {
 public:
+    invalid_argument(const std::string& message, std::int64_t arg_position)
+            : oneapi::math::invalid_argument(message),
+              oneapi::math::lapack::exception(this, arg_position) {}
     invalid_argument(const std::string& function, const std::string& info,
                      std::int64_t arg_position = 0, std::int64_t detail = 0)
             : oneapi::math::invalid_argument("LAPACK", function, info),
               oneapi::math::lapack::exception(this, arg_position, detail) {}
     using oneapi::math::invalid_argument::what;
 };
+
+// Rethrow Intel(R) oneMKL exceptions as oneMath exceptions
+#define RETHROW_ONEMKL_LAPACK_EXCEPTIONS(EXPRESSION)       \
+    do {                                                   \
+        try {                                              \
+            EXPRESSION;                                    \
+        }                                                  \
+        catch (const oneapi::mkl::unsupported_device& e) { \
+            throw unsupported_device(e.what());            \
+        }                                                  \
+        catch (const oneapi::mkl::host_bad_alloc& e) {     \
+            throw host_bad_alloc(e.what());                \
+        }                                                  \
+        catch (const oneapi::mkl::device_bad_alloc& e) {   \
+            throw device_bad_alloc(e.what());              \
+        }                                                  \
+        catch (const oneapi::mkl::unimplemented& e) {      \
+            throw unimplemented(e.what());                 \
+        }                                                  \
+        catch (const oneapi::mkl::lapack::invalid_argument& e) {    \
+            throw oneapi::math::lapack::invalid_argument(e.what(), e.info()); \
+        }                                                  \
+        catch (const oneapi::mkl::uninitialized& e) {      \
+            throw uninitialized(e.what());                 \
+        }                                                  \
+        catch (const oneapi::mkl::lapack::computation_error& e) {   \
+            throw oneapi::math::lapack::computation_error(e.what(), e.info()); \
+        }                                                  \
+        catch (const oneapi::mkl::lapack::batch_error& e) { \
+            throw batch_error(e.what());                   \
+        }                                                  \
+        catch (const oneapi::mkl::exception& e) {          \
+            throw exception(e.what());                     \
+        }                                                  \
+    } while (0)
+
+#define RETHROW_ONEMKL_LAPACK_EXCEPTIONS_RET(EXPRESSION)     \
+    do {                                                     \
+        RETHROW_ONEMKL_LAPACK_EXCEPTIONS(return EXPRESSION); \
+    } while (0)
 
 } // namespace lapack
 } // namespace math
