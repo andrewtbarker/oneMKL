@@ -28,6 +28,7 @@
 
 #include "oneapi/math/types.hpp"
 #include "oneapi/math/lapack/types.hpp"
+#include "oneapi/math/lapack/exceptions.hpp"
 #include "oneapi/math/lapack/detail/mklcpu/onemath_lapack_mklcpu.hpp"
 
 #include "common_onemkl_conversion.hpp"

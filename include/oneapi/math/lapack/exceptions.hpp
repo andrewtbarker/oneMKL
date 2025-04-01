@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "oneapi/math/exceptions.hpp"
+
 namespace oneapi {
 namespace math {
 namespace lapack {
@@ -92,38 +94,38 @@ public:
 };
 
 // Rethrow Intel(R) oneMKL exceptions as oneMath exceptions
-#define RETHROW_ONEMKL_LAPACK_EXCEPTIONS(EXPRESSION)       \
-    do {                                                   \
-        try {                                              \
-            EXPRESSION;                                    \
-        }                                                  \
-        catch (const oneapi::mkl::unsupported_device& e) { \
-            throw unsupported_device(e.what());            \
-        }                                                  \
-        catch (const oneapi::mkl::host_bad_alloc& e) {     \
-            throw host_bad_alloc(e.what());                \
-        }                                                  \
-        catch (const oneapi::mkl::device_bad_alloc& e) {   \
-            throw device_bad_alloc(e.what());              \
-        }                                                  \
-        catch (const oneapi::mkl::unimplemented& e) {      \
-            throw unimplemented(e.what());                 \
-        }                                                  \
-        catch (const oneapi::mkl::lapack::invalid_argument& e) {    \
-            throw oneapi::math::lapack::invalid_argument(e.what(), e.info()); \
-        }                                                  \
-        catch (const oneapi::mkl::uninitialized& e) {      \
-            throw uninitialized(e.what());                 \
-        }                                                  \
-        catch (const oneapi::mkl::lapack::computation_error& e) {   \
+#define RETHROW_ONEMKL_LAPACK_EXCEPTIONS(EXPRESSION)                           \
+    do {                                                                       \
+        try {                                                                  \
+            EXPRESSION;                                                        \
+        }                                                                      \
+        catch (const oneapi::mkl::unsupported_device& e) {                     \
+            throw unsupported_device(e.what());                                \
+        }                                                                      \
+        catch (const oneapi::mkl::host_bad_alloc& e) {                         \
+            throw host_bad_alloc(e.what());                                    \
+        }                                                                      \
+        catch (const oneapi::mkl::device_bad_alloc& e) {                       \
+            throw device_bad_alloc(e.what());                                  \
+        }                                                                      \
+        catch (const oneapi::mkl::unimplemented& e) {                          \
+            throw unimplemented(e.what());                                     \
+        }                                                                      \
+        catch (const oneapi::mkl::lapack::invalid_argument& e) {               \
+            throw oneapi::math::lapack::invalid_argument(e.what(), e.info());  \
+        }                                                                      \
+        catch (const oneapi::mkl::uninitialized& e) {                          \
+            throw uninitialized(e.what());                                     \
+        }                                                                      \
+        catch (const oneapi::mkl::lapack::computation_error& e) {              \
             throw oneapi::math::lapack::computation_error(e.what(), e.info()); \
-        }                                                  \
-        catch (const oneapi::mkl::lapack::batch_error& e) { \
-            throw batch_error(e.what());                   \
-        }                                                  \
-        catch (const oneapi::mkl::exception& e) {          \
-            throw exception(e.what());                     \
-        }                                                  \
+        }                                                                      \
+        catch (const oneapi::mkl::lapack::batch_error& e) {                    \
+            throw oneapi::math::batch_error(e.what());                         \
+        }                                                                      \
+        catch (const oneapi::mkl::exception& e) {                              \
+            throw oneapi::math::exception(e.what());                           \
+        }                                                                      \
     } while (0)
 
 #define RETHROW_ONEMKL_LAPACK_EXCEPTIONS_RET(EXPRESSION)     \
